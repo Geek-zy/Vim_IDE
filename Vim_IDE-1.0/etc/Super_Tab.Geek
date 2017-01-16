@@ -1,0 +1,5 @@
+
+"功能编号：(0000,0014)   功能介绍：快速自动补全
+let SuperTabRetainCompletionType=2
+let SuperTabDefaultCompletionType="<C-X><C-N>"
+

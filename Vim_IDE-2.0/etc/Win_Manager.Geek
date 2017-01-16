@@ -1,0 +1,5 @@
+
+"功能编号：(0000,0006)   功能介绍：文件浏览器和窗口管理器
+let winManagerWindowLayout='FileExplorer|TagList'
+nmap wm :WMToggle<cr>
+

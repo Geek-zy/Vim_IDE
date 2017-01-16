@@ -1,0 +1,6 @@
+
+"功能编号：(0000,0009)   功能介绍：快速浏览和操作Buffer
+let miniBufExplMapCTabSwitchBufs = 1
+let miniBufExplMapWindowNavVim = 1
+let miniBufExplMapWindowNavArrows = 1
+

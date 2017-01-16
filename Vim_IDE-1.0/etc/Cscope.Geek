@@ -1,0 +1,4 @@
+
+"功能编号：(0000,0007)   功能介绍:超频的Ctags
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+

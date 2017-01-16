@@ -1,0 +1,432 @@
+
+
+
+																		***Vim_IDE使用教程***
+
+
+一、Vim_IDE开发背景
+
+	作为一名C语言程序员，而且是linux下编程，好多IDE环境不愿意使用，Geek特别喜欢用Vi编辑器（传说中的编辑器之神，Vim是Vi的升级版，多了好多功能，嘎嘎^_^），
+	但是Vi只是一个编辑器，编写代码速度偏慢（没有预览工程、程序跳转及自动补全等功能），所以就萌发了将Vi改装成一个强大的IDE环境。所谓"工欲善其事, 必先利其器"!!!
+
+
+二、Vim_IDE功能预览
+
+1.  Vim帮助手册
+2.  vim编程常用命令
+3.  语法高亮
+4.  在程序中跳来跳去: Ctags 的使用
+5.  高效地浏览源码 -- 插件: TagList
+6.  文件浏览器和窗口管理器 -- 插件: WinManager
+7.  Cscope 的使用 -- 超频的Ctags
+8.  QuickFix 窗口
+9.  快速浏览和操作Buffer -- 插件: MiniBufExplorer
+10. c/h文件间相互切换 -- 插件: A
+11. 在工程中查找 -- 插件: Grep
+12. 高亮的书签 -- 插件: VisualMark
+13. 自动补全
+14. 加速你的补全 -- 插件: SuperTab
+15. Vim代码折叠
+16.帮助可怜的乌干达儿童
+
+
+三、各功能命令基本介绍
+
+1.  Vim帮助手册
+
+	默认安装的是中文版，想要英文的可以到Vim_IDE/usr/vimcdoc-1.5.0/解压。将Vim_IDE/usr/doc/目录下的所有文件拷贝到/etc/vim/doc/下
+	
+	sudo cp Vim_IDE/usr/vimcdoc-1.5.0/doc/* /etc/vim/doc/
+
+
+2.  vim编程常用命令
+
+	Vim有三种编辑模式
+	插入	命令行		可视	正常
+	i		esc			v
+
+	打开教程	==>		命令行输入    vimtutor
+	打开教程    ==>     在Vim中输入   :help
+
+
+3.  语法高亮
+
+	写程序没有语法高亮将是一件多么痛苦的事情啊, 幸亏vim的作者是个程序员(如果不是, 那可NB大了), 提供了语法高亮功能, 在上面的图片中大家也可以看到那些注释, 
+	关键字, 字符串等, 都用不同颜色显示出来了, 要做到这样, 首先要在你的 /etc/vim/vimrc 文件中增加下面几句话:
+	
+	syntax enable
+	syntax on 再重新启动vim, 并打开一个c程序文件, 是不是觉得眼前突然色彩缤纷了起来...
+	
+	如果你不喜欢这个配色方案你可以在"编辑->配色方案"(gvim)中选择一个你满意的配色方案, 然后在~/.vimrc文件中增加下面这句:
+	colorscheme desert desert是我喜欢的配色方案, 你可以改成你的. 如果菜单中的配色方案你还不满意(你也太花了吧), 没关系, 在 vim.org 上跟你一样的人很多, 他们
+	做了各种各样的颜色主题, 你可以下载下来一个一个的试, 多地可以看到你眼花. 如果这样你还不满意(你还真是XXXX), 没关系, vim的作者早想到会有你这种人了, 你可以
+	创建你自己的颜色主题, 把下面的这篇文档好好学习一些一下吧:
+
+	更炫的语法高亮:
+	你可能会发现很多东西没有高亮起来, 比如运算符号, 各种括号, 函数名, 自定义类型等, 但是看上面的图片, 我的运算符号和函数名都加亮了^_^, 想知道为什么吗? 
+	哇哈哈哈哈......
+
+	主要的思路是新建一个语法文件, 在文件中定义你要高亮的东东, 想高亮什么就高亮什么, 用vim就是这么自信. 所谓的语法文件就是vim用来高亮各种源文件的一个脚本, 
+	vim靠这个脚本的描述来使文件中的不同文本显示不同的颜色, 比如C语言的语法文件放在类似于这样的一个路径中:/etc/vim/c.vim
+	其他语言的语法文件也可以在这个路径中找到, 你的也许不在这个路径中, 不管它, 在你自己的HOME下新建一个语法文件, 新建一个空文件: /etc/vim/c.vim在其中加入
+
+	"========================================================
+	" Highlight All Function
+	"========================================================
+	syn match   cFunction "/<[a-zA-Z_][a-zA-Z_0-9]*/>[^()]*)("me=e-2
+	syn match   cFunction "/<[a-zA-Z_][a-zA-Z_0-9]*/>/s*("me=e-1
+	hi cFunction        gui=NONE guifg=#B5A1FF
+
+	"========================================================
+	" Highlight All Math Operator
+	"========================================================
+	" C math operators
+	syn match   cMathOperator     display "[-+/*/%=]"
+	" C pointer operators
+	syn match   cPointerOperator  display "->/|/."
+	" C logical   operators - boolean results
+	syn match       cLogicalOperator  display "[!<>]=/="
+	syn match       cLogicalOperator  display "=="
+	" C bit operators
+	syn match       cBinaryOperator   display "/(&/||/|/^/|<</|>>/)=/="
+	syn match       cBinaryOperator   display "/~"
+	syn match       cBinaryOperatorError display "/~="
+	" More C logical operators - highlight in preference to binary
+	syn match       cLogicalOperator  display "&&/|||"
+	syn match       cLogicalOperatorError display "/(&&/|||/)="
+
+	" Math Operator
+	hi cMathOperator            guifg=#3EFFE2
+	hi cPointerOperator         guifg=#3EFFE2
+	hi cLogicalOperator         guifg=#3EFFE2
+	hi cBinaryOperator          guifg=#3EFFE2
+	hi cBinaryOperatorError     guifg=#3EFFE2
+	hi cLogicalOperator         guifg=#3EFFE2
+	hi cLogicalOperatorError    guifg=#3EFFE2
+
+	"========================================================
+	" My Own DataType
+	"========================================================
+	syn keyword cType       My_Type_1 My_Type_2 My_Type_3
+
+
+	打开教程    ==>     在Vim中输入   :help syntax.txt
+
+
+4.  在程序中跳来跳去: Ctags 的使用
+
+	Tag文件(标签文件)可是程序员的看家宝呀, 你可以不用它, 但你不能不知道它, 因为Linux内核源码都提供了"make tags"这个选项. 下面我们就来介绍Tag文件.
+
+	tags文件是由ctags程序产生的一个索引文件, ctags程序其是叫"Exuberant Ctags", 是Unix上面ctags程序的替代品, 并且比它功能强大, 是大多数Linux发行版上
+	默认的ctags程序. 那么tags文件是做什么用的呢? 如果你在读程序时看了一个函数调用, 或者一个变量, 或者一个宏等等, 你想知道它们的定义在哪儿, 怎么办呢?
+	用grep? 那会搜出很多不相干的地方. 现在流行用是的<C-]>, 谁用谁知道呀, 当光标在某个函数或变量上时, 按下"Ctrl+]", 光标会自动跳转到其定义处, 够厉害吧, 
+	你不用再羡慕Visual Studio的程序员了, 开始羡慕我吧~_~.
+
+
+	ctags -R	==>		在源文件目录执行这条命令生成一个tags文件，将"set tags=目录路径/tags"这句添加到/etc/vim/vimrc中，用Vim打开tags可用下列命令操作
+	<C-]>		==>		光标会自动跳到选定函数的定义处，<C-]>和<C-T>相当于ctrl+]和ctrl+T，以后遇到<C-*>这样格式的就知道了
+	<C-T>		==>		这样又跳回到刚刚选定函数被调用的地方了, 变量, 结构, 宏, 等等, 都可以的
+	打开教程	==>		在Vim中输入   :help usr_29
+
+
+5.  教你高效地浏览源码 -- 插件: TagList
+
+
+	"Tab List"是一个用来浏览源代码的Vim插件, 这个插件可以让你高效地浏览各种不同语言编写的的源代码, "Tag List"有以下一些特点:
+
+	* 在Vim的一个垂直或水平的分割窗口中显示一个文件中定义的tags(函数, 类, 结构,变量, 等)
+	* 在GUI Vim中, 可以选择把tags显示在下拉菜单和弹出菜单中
+	* 当你在多个源文件/缓冲区间切换时, taglist窗口会自动进行相应地更新. 当你打开新文件时,新文件中定义的tags会被添加到已经存在的文件列表中,
+	  并且所有文件中定义的tags会以文件名来分组显示
+	* 当你在taglist窗口中选中一个tag名时, 源文件中的光标会自动跳转到该tag的定义处
+	* 自动高亮当前的tag名
+	* 按类型分组各tag, 并且将各组显示在一个可折叠的树形结构中
+	* 可以显示tag的原始类型和作用域
+	* 在taglist窗口可选择显示tag的原始类型替代tag名
+	* tag列表可以按照tag名, 或者时间进行排序
+	* 支持以下语言的源文件: Assembly, ASP, Awk, Beta, C,C++, C#, Cobol, Eiffel, Erlang, Fortran, HTML, Java, Javascript, Lisp,Lua, Make, Pascal, Perl, 
+	PHP, Python, Rexx,Ruby, Scheme, Shell, Slang,SML, Sql, TCL, Verilog, Vim and Yacc.
+	* 可以很简单的扩展支持新的语言. 对新语言支持的修改也很简单.
+	* 提供了一些函数, 可以用来在Vim的状态栏或者在窗口的标题栏显示当前的tag名
+	* taglist中的文件和tags的列表可以在被保存和在vim会话间加载
+	* 提供了一些用来取得tag名和原始类型的命令
+	* 在控制台vim和GUI vim中都可以使用
+	* 可以和winmanager插件一起使用. winmanager插件可以让你同时使用文件浏览器,缓冲区浏览器和taglist插件, 就像一个IDE一样.
+	* 可以在Unix和MS-Windows系统中使用
+
+	打开Tag窗口 ==>		在Vim中输入	  :Tlist
+	打开教程    ==>		在Vim中输入   :help taglist.txt
+
+
+6.  文件浏览器和窗口管理器 -- 插件: WinManager
+
+	通过WinManager插件来将TagList窗口和netrw窗口整合起来,可以通过这个浏览器来浏览工程中的源文件, 是不是越来越像常见的IDE了, 当光标停在某个文件或文件夹
+	的时候, 按下回车, 可以打开该文件或文件夹.这个东东是怎么调出来的呢? 其实这个也是由插件实现的, 这个插件是netrw.vim, 只不过你不用下载和安装, 这个插件
+	已经是标准的vim插件, 已经随vim一起安装进你的系统里了
+
+
+	在该界面上你可以用下面的一些命令来进行常用的目录和文件操作:
+
+	<F1>	==>		Cscope示帮助
+	<cr>	==>		Cscope果光标下是目录, 则进入该目录; 如果光标下文件, 则打开该文件
+	-		==>		返回上级目录
+	c		==>		切换vim 当前工作目录正在浏览的目录
+	d		==>		创建目录
+	D		==>		删除目录或文件
+	i		==>		切换显示方式
+	R		==>		文件或目录重命名
+	s		==>		选择排序方式
+	x		==>		定制浏览方式, 使用你指定的程序打开该文件
+
+	打开组合窗口==>		正常模式输入  wm
+	打开教程	==>		在Vim中输入   :help winmanager
+
+7.  Cscope 的使用
+
+
+	这下更厉害了, 用Cscope自己的话说 - "你可以把它当做是超过频的ctags", 其功能和强大程度可见一斑
+	
+	Cscope 是一个交互式的屏幕下使用的工具，用来帮助你:
+	* 无须在厚厚的程序清单中翻来翻去就可以认识一个 C 程序的工作原理。
+	* 无须熟悉整个程序就可以知道清楚程序 bug 所要修改的代码位置。
+	* 检查提议的改动 (如添加一个枚举值) 可能会产生的效果。
+	* 验证所有的源文件都已经作了需要的修改；例如给某一个现存的函数添加一个参数。
+	* 在所有相关的源文件中对一个全局变量改名。
+	* 在所有相关的位置将一个常数改为一个预处理符号。
+
+	它被设计用来回答以下的问题:
+	* 什么地方用到了这个符号？
+	* 这是在什么地方定义的？
+	* 这个变量在哪里被赋值？
+	* 这个全局符号的定义在哪里？
+	* 这个函数在源文件中的哪个地方？
+	* 哪些函数调用了这个函数？
+	* 这个函数调用了哪些函数？
+	* 信息 "out of space" 从哪来？
+	* 这个源文件在整个目录结构中处于什么位置？
+	* 哪些文件包含这个头文件？
+
+
+	跟Ctags一样, 要使用其功能必须先为你的代码生成一个cscope的数据库, 在项目的根目录运行下面的命令:
+	$ cd /home/wooin/vim71/
+	$ cscope -Rbq
+
+	此后会生成三个文件
+	$ ll cscope.*
+	-rw-rw-r-- 1 wooin wooin 1.1M 2007-09-30 10:56 cscope.in.out
+	-rw-rw-r-- 1 wooin wooin 6.7M 2007-09-30 10:56 cscope.out
+	-rw-rw-r-- 1 wooin wooin 5.1M 2007-09-30 10:56 cscope.po.out
+	
+	打开文件, 开始Coding
+	$ cd src
+	$ vi main.c
+	进入vim后第一件事是要把刚才生成的cscope文件导入到vim中来, 用下面的命令:
+	:cs add /home/wooin/vim71/cscope.out /home/wooin/vim71 上面这条命令很重要, 必须写全, 不能只写前半句:
+	:cs add /home/wooin/vim71/cscope.out
+	因为源码是多级目录的, 如果这样写, cscope是无法在子目录中的源码中工作的, 当然, 如果你的源码都在同一级目录中就无所谓了. 如果你要经常用cscope的话,
+   	可以把上面那句加到~/.vimrc中去.
+
+	cscope的主要功能是通过同的子命令"find"来实现的
+	"cscope find"的用法:
+	cs find c|d|e|f|g|i|s|t name
+	0 或 sudo找本 C 符号(可以跳过注释)
+	1 或 gs找本定义
+	2 或 doc找本函数调用的函数
+	3 或 cs找调用本函数的函数
+	4 或 txt找本字符串
+	6 或 etc找本 egrep 模式
+	7 或 find找本文件
+	8 或 if_cscop找包含本文件的文件
+
+	如果每次查找都要输入一长串命令的话还真是件讨人厌的事情, Cscope的帮助手册中推荐了一些快捷键的用法, 下面是其中一组, 也是我用的, 将下面的内容添加到
+	/etc/vim/vimrc中, 并重启vim:
+	
+	nmap <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-_>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-_>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-_>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-_>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+	nmap <C-_>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+	nmap <C-_>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+	nmap <C-_>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+	
+	当光标停在某个你要查找的词上时, 按下<C-_>g, 就是查找该对象的定义, 其他的同理.按这种组合键有一点技巧,按了<C-_>后要马上按下一个键,否则屏幕一闪就
+	回到nomal状态了<C-_>g的按法是先按"Ctrl+Shift+-", 然后很快再按"g"
+
+	很奇怪, 其中的这句:
+	nmap <C-_>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+	在我的vim中无法工作, 但是我改成:
+	nmap <C-_>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+	就可以正常工作了, 不知道是什么原因? 有哪位朋友知道请告诉我.
+
+	cscope的其他功能你可以通过帮助手册自己慢慢学习
+
+
+	查找字段		==>		在Vim中输入   :cs find c vim_strsave
+	打开QuickFix窗口==>		在Vim中输入   :cw
+	打开教程		==>     在Vim中输入   :help if_cscop.txt
+
+	重新初始化所有连接		==>		:cs reset
+
+
+8.  QuickFix 窗口
+
+	修改一下main.c, 人为地造成几处错误, 
+	:make 显然编译会报很多错误, 当编译结束并退出到源码界面时, 刚才编译器报的错误都已经看不到了, 但是我们可以用QuickFix窗口再将错误信息找出来, 
+	用下面的命令调出QuickFix窗口 :cw 此时你就可以看如下图所示的QuickFix窗口了:
+
+	在下面的QuickFix窗口中我们可以找到每一个编译错误, 同样你可以用鼠标点击每一条记录, 代码会马上自动跳转到错误处, 你还可以用下面的命令来跳转:
+	:cn        // 切换到下一个结果
+	:cp        // 切换到上一个结果
+
+	如果你经常使用这两个命令, 你还可以给他们设定快捷键, 比如在~/.vimrc中增加:
+	nmap <F6> :cn<cr>
+	nmap <F7> :cp<cr>
+
+	打开教程    ==>		在Vim中输入   :help quickfix
+
+
+9.  快速浏览和操作Buffer -- 插件: MiniBufExplorer
+
+	vim自带的buffer管理工具（教程在Vim中输入   :help buffer）只有:ls, :bnext, :bdelete 等的命令, 既不好用, 又不直观. 现在隆重向你推荐一款vim插件
+	(plugin): MiniBufExplorer
+
+	MiniBufExplorer使用方法:重新启动vim, 当你只编辑一个buffer的时候MiniBufExplorer派不上用场, 当你打开第二个buffer的时候, MiniBufExplorer窗口就自
+	动弹出来了上面那个狭长的窗口就是MiniBufExplorer窗口, 其中列出了当前所有已经打开的buffer, 当你把光标置于这个窗口时, 有下面几个快捷键可以用:
+	
+	<Tab>		==>		打开教程向前循环切换到每个uffer上
+	<S-Tab>		==>		打开教程向后循环切换到每个uffer上
+	<Enter>		==>		打开教程在打开光标所在的uffer
+	d			==>		除光标所在的uffer
+	<C-Tab>		==>		打开教程向前循环切换到每个uffer,并在但前窗口打开
+	<C-S-Tab>	==>		打开教程向后循环切换到每个uffer,并在但前窗口打开
+
+	打开教程    ==>     在Vim_IDE/usr/minibufexpl/minibufexpl.vim文件的头部
+	
+
+10. c/h文件间相互切换 -- 插件: A
+
+	作为一个C程序员, 日常Coding时在源文件与头文件间进行切换是再平常不过的事了, 直接用vim打开其源/头文件其实也不是什么麻烦事, 但是只用一个按键就切换过来了, 
+	这是多么贴心的功能啊....
+
+	新uffer切换到/h文件			==>		在Vim中输入   :A
+	向分割窗口并打开/h文件		==>		在Vim中输入   :AS
+	纵向分割窗口并打开c/h文件	==>		在Vim中输入	  :AV
+	新建一个标签页并打开c/h文件 ==>		在Vim中输入   :AT
+
+	快捷键		==>		F12
+
+
+11. 在工程中查找 -- 插件: Grep
+
+	vim有自己的查找功能, 但是跟shell中的grep比起来还是有些差距的, 有时Coding正火急火燎的时候, 真想按下F3, 对光标所在的词来个全工程范围的grep, 
+	不用敲那些繁琐的命令, 现在福音来了, 跟我同样懒的人不在少数, 在grep.vim脚本的前部可以找到一些说明文档:
+
+	:Grep照指定的规则在指定的文件中查找
+	:Rgrep同上, 但是是递归的grep
+	:GrepBuffer在所有打开的缓冲区中查找
+	:Bgrep同上
+	:GrepArgs在vim的argument filenames (:args)中查找
+	:Fgrep运行fgrep
+	:Rfgrep运行递归的fgrep
+	:Egrep运行egrep
+	:Regrep运行递归的egrep
+	:Agrep运行agrep
+	:Ragrep运行递归的agrep
+
+	上面的命令是类似这样调用的:
+	:Grep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Rgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Fgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Rfgrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Egrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Regrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+	:GrepBuffer [<grep_options>] [<search_pattern>]
+	:Bgrep [<grep_options>] [<search_pattern>]
+	:GrepArgs [<grep_options>] [<search_pattern>]
+
+	快捷键		==>		F3
+	打开教程    ==>		在Vim_IDE/usr/grep/grep.vim文件头部
+
+
+12. 高亮的书签 -- 插件: VisualMark
+
+	标记		==>		mm mT	（T：为自定义标记符，范围<a~z>and<A~Z>）
+	跳转		==>		:'T
+	取得所有标记==>		:marks
+	删除标记	==>		:delmarks T
+	
+	打开教程    ==>		在Vim中输入   :help Mark
+
+13. 自动补全
+
+	Ctrl+P			向前切换成员
+	Ctrl+N			向后切换成员
+	Ctrl+E			表示退出下拉窗口, 并退回到原来录入的文字
+	Ctrl+Y			表示退出下拉窗口, 并接受当前选项
+
+	如果你增加了一些成员变量, 全能补全还不能马上将新成员补全, 需要你重新生成一下tags文件, 但是你不用重启vim, 只是重新生成一下tags文件就行了, 
+	这时全能补全已经可以自动补全了, 还真够"全能"吧.
+
+	vim中的其他补全方式还有:
+
+	Ctrl+X Ctrl+L		整行补全
+	Ctrl+X Ctrl+N		据当前文件里关键字补全
+	Ctrl+X Ctrl+K		根据字典补全
+	Ctrl+X Ctrl+T		据同义词字典补全
+	Ctrl+X Ctrl+I		据头文件内关键字补全
+	Ctrl+X Ctrl+]		打开教程根据标签补全
+	Ctrl+X Ctrl+F		补全文件名
+	Ctrl+X Ctrl+D		补全宏定义
+	Ctrl+X Ctrl+V		补全Vim命令
+	Ctrl+X Ctrl+U		用户自定义补全方式
+	Ctrl+X Ctrl+S		拼写写建议
+	
+    打开教程    ==>     在Vim中输入   :help new-omni-completion
+
+
+14. 加速你的补全 -- 插件: SuperTab
+
+	配置信息:
+
+	let g:SuperTabDefaultCompletionType="<C-X><C-O>"
+	" 设置按下<Tab>后默认的补全方式, 默认是<C-P>, 
+	" 现在改为<C-X><C-O>. 关于<C-P>的补全方式, 
+	" 还有其他的补全方式, 你可以看看下面的一些帮助:
+	" :help ins-completion
+	" :help compl-omni
+
+	let g:SuperTabRetainCompletionType=2
+	" 0 - 不记录上次的补全方式
+	" 1 - 记住上次的补全方式,直到用其他的补全命令改变它
+	" 2 - 记住上次的补全方式,直到按ESC退出插入模式为止
+
+	现在我的<Tab>键不好用了, 我以前爱用<Tab>进行缩进, 如果前面有字符按下<Tab>键后就会进行补全, 而不是我想要的缩进功能
+	快捷键可以暂时关闭和激活SuperTab键的功能正在开发中。。。。。。
+
+	打开教程    ==>     在Vim_IDE/usr/supertab/supertab.vim
+    打开教程    ==>     在Vim中输入   :SuperTabHelp
+
+
+15. Vim代码折叠
+
+	zf20	==>		创建折叠（20折叠20行）
+	za		==>		打开关闭折叠
+
+
+16.帮助可怜的乌干达儿童
+
+	Help poor children in Uganda!
+	"帮助可怜的乌干达儿童"
+
+	vim的作者开发了这么个强大, 好用的编辑器, 并且是完全开源, 完全免费的, 不知道比尔盖子会不会觉得这个人真是不可理喻. 
+	作者对用户用户的唯一期望就是帮助乌干达的儿童, 可以用命令:hlep kcc查看详细的内容, 
+
+	1、捐助一个读小学的孩子：每月 17 欧元 (或更多)。
+	2、捐助一个读中学的孩子：每月 25 欧元 (或更多)。
+	3、捐助诊所：每月或每季度，数额不限。
+	4、一次性捐赠。
+
+	有条件的就资助一下, 没条件的就像我一样帮助宣传一下或者开发一个开源软件, 这也算是开源精神.....

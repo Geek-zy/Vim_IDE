@@ -1,0 +1,5 @@
+
+"功能编号：(0000,0013)   功能介绍：自动补全
+filetype plugin indent on
+set completeopt=longest,menu
+

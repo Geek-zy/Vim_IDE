@@ -1,0 +1,18 @@
+
+"功能编号：(0000,0003)   功能介绍：语法高亮
+
+syntax on "语法高亮度显示
+
+set nu! "显示行号
+set tabstop=4 "设置tab键为4个空格，
+set softtabstop=4
+set shiftwidth=4 "设置当行之间交错时使用4个空格  
+set cindent "（cindent是特别针对 C语言语法自动缩进）
+set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s)}
+
+if &term=="xterm"
+	set t_Co=8
+	set t_Sb=^[[4%dm
+	set t_Sf=^[[3%dm
+endif
+
